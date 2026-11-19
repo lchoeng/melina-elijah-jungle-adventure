@@ -32,11 +32,11 @@ html,body{margin:0;height:100%;background:#1d130c;overflow:hidden;font-family:"A
 .card.sm span{width:100%;text-align:center}
 .card span{font-size:calc(var(--u)*28);color:#fff;-webkit-text-stroke:calc(var(--u)*2) #1d130c;paint-order:stroke fill}
 .card:active{transform:translateY(calc(var(--u)*5));box-shadow:0 calc(var(--u)*2) 0 #1d130c}
-.lv .card{min-width:calc(var(--u)*230);justify-content:center}
+.lv{flex-wrap:wrap;justify-content:center;max-width:calc(var(--u)*760);gap:calc(var(--u)*12)}.lv .card{min-width:0;width:calc(var(--u)*230);padding:calc(var(--u)*6) calc(var(--u)*10);justify-content:center;gap:calc(var(--u)*3)}.lv .lvl b{font-size:calc(var(--u)*34)}
 .lvl b{font-size:calc(var(--u)*60);color:#fff;-webkit-text-stroke:calc(var(--u)*3) #1d130c;paint-order:stroke fill}
 .lvl small{font-family:Arial,sans-serif;font-weight:bold;font-size:calc(var(--u)*14);color:#1d130c;background:rgba(255,255,255,.7);border-radius:calc(var(--u)*8);padding:calc(var(--u)*2) calc(var(--u)*8)}
 .locked{filter:grayscale(1) brightness(.7);cursor:default}
-.coll{display:flex;gap:calc(var(--u)*16);max-height:calc(var(--u)*400)}
+.coll{display:flex;gap:calc(var(--u)*16);max-height:calc(var(--u)*420)}
 .panel{background:#fff3d0;border:calc(var(--u)*4) solid #1d130c;border-radius:calc(var(--u)*18);padding:calc(var(--u)*12);width:calc(var(--u)*430);overflow:auto;box-shadow:0 calc(var(--u)*6) 0 #1d130c}
 .ph{font-size:calc(var(--u)*20);color:#ff6a2a;-webkit-text-stroke:calc(var(--u)*1) #1d130c;margin-bottom:calc(var(--u)*8)}
 .erow{display:flex;flex-direction:column;margin-bottom:calc(var(--u)*10);font-size:calc(var(--u)*15)}
@@ -150,7 +150,7 @@ const CH = {
 
 /* ---------- save ---------- */
 const SAVE_KEY = 'me-jungle-adventure-v1';
-let save = { unlocked: 1, eggs: { 1: [], 2: [], 3: [] }, ach: {}, best: 0 };
+let save = { unlocked: 1, eggs: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }, ach: {}, best: 0 };
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (s) save = Object.assign(save, s); } catch (e) { }
 function writeSave() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { } }
 const ACH = {
@@ -163,8 +163,12 @@ const ACH = {
   perfect1: ['Perfect Egg Hunt: Jungle Trail', 'Find every egg in Level 1'],
   perfect2: ['Perfect Egg Hunt: Vine River', 'Find every egg in Level 2'],
   perfect3: ['Perfect Egg Hunt: Ancient Ruins', 'Find every egg in Level 3'],
+  perfect4: ['Perfect Egg Hunt: Misty Swamp', 'Find every egg in Level 4'],
+  perfect5: ['Perfect Egg Hunt: Lava Caves', 'Find every egg in Level 5'],
+  perfect6: ['Perfect Egg Hunt: Treetop Kingdom', 'Find every egg in Level 6'],
   buddies: ['Best Buddies', 'Finish a level together in Two Player'],
   boss: ['Boss Beater', 'Defeat the Giant Carnotaurus'],
+  boss2: ['Rematch Champs', 'Beat the Giant Carnotaurus again in Level 6'],
   castle: ['Tree House Heroes', 'Reach the Tree House Castle'],
 };
 function award(k) {
@@ -286,9 +290,12 @@ function leafBlob(g, x, y, r, fill, R) {
   g.closePath(); g.fillStyle = fill; g.fill(); ink(g, 2.5);
 }
 const THEMES = [
-  { name: 'day', sky: ['#9fe0f2', '#e9f7d8'], far: '#8fbf9a', farDark: '#5f8f72', leaf: ['#3f8f3a', '#56a843', '#2f7330'], trunk: '#6b4426', dirt: '#8a5a33', grass: '#5fb33f', pit: '#1a2a1a' },
-  { name: 'river', sky: ['#7fd2d8', '#d8f2e0'], far: '#78a9a0', farDark: '#4e7f78', leaf: ['#2f7f4a', '#3f9a50', '#24603a'], trunk: '#5e3d22', dirt: '#7b5232', grass: '#4fa846', pit: '#1c4f7a' },
-  { name: 'ruins', sky: ['#f39b5a', '#fcd9a0'], far: '#b47a68', farDark: '#7e4c42', leaf: ['#4c7a2c', '#668f34', '#3a5f22'], trunk: '#5a3820', dirt: '#7a4a2c', grass: '#6a9a35', pit: '#2a0e08' },
+  { name: 'day', sky: ['#9fe0f2', '#e9f7d8'], far: '#8fbf9a', farDark: '#5f8f72', leaf: ['#3f8f3a', '#56a843', '#2f7330'], trunk: '#6b4426', dirt: '#8a5a33', grass: '#5fb33f', pit: 'dark' },
+  { name: 'river', sky: ['#7fd2d8', '#d8f2e0'], far: '#78a9a0', farDark: '#4e7f78', leaf: ['#2f7f4a', '#3f9a50', '#24603a'], trunk: '#5e3d22', dirt: '#7b5232', grass: '#4fa846', pit: 'water', water: '#2f86c4' },
+  { name: 'ruins', sky: ['#f39b5a', '#fcd9a0'], far: '#b47a68', farDark: '#7e4c42', leaf: ['#4c7a2c', '#668f34', '#3a5f22'], trunk: '#5a3820', dirt: '#7a4a2c', grass: '#6a9a35', pit: 'lava' },
+  { name: 'swamp', sky: ['#6fa79a', '#cfe6c8'], far: '#6d8f86', farDark: '#45675e', leaf: ['#2e6b3f', '#3d8550', '#22512f'], trunk: '#4e3a26', dirt: '#5e4a30', grass: '#4f8f3a', pit: 'water', water: '#3f7a5e' },
+  { name: 'lava', sky: ['#6a2e26', '#e08a45'], far: '#7a4038', farDark: '#4e2622', leaf: ['#5a6a2a', '#6f7f30', '#44521f'], trunk: '#4a2c18', dirt: '#5a3422', grass: '#7a8a35', pit: 'lava' },
+  { name: 'sky', sky: ['#ffb3c8', '#ffe9b8'], far: '#c79ab8', farDark: '#9a6f92', leaf: ['#3f9a4a', '#58b85a', '#2f7a3a'], trunk: '#7a4b28', dirt: '#7a5232', grass: '#62c045', pit: 'dark' },
 ];
 function makeFar(th, seed) {
   const c = mk(1920, 540), g = c.getContext('2d'), R = rng(seed);
@@ -305,7 +312,9 @@ function makeFar(th, seed) {
     g.globalAlpha = layer ? .9 : .65; g.fillStyle = col; g.fill(); g.globalAlpha = 1; ink(g, 2);
     hatchIn(g, () => { g.beginPath(); g.rect(0, 0, 1920, 540); }, 0, base - 40, 1920, 200, 9, 'rgba(0,0,0,.12)', 1.2);
   }
-  if (th.name === 'ruins') { // volcano
+  if (th.name === 'sky') { for (let i = 0; i < 9; i++) { const cx = 100 + i * 210 + R() * 60, cy = 80 + R() * 120; for (let j = 0; j < 4; j++) { g.beginPath(); g.arc(cx + j * 26, cy + (j % 2) * -10, 26 + R() * 10, 0, 7); g.fillStyle = '#fff6fa'; g.fill(); ink(g, 1.5); } } }
+  if (th.name === 'swamp') { g.beginPath(); g.arc(1500, 110, 46, 0, 7); g.fillStyle = '#f5f0c8'; g.fill(); ink(g, 2); }
+  if (th.name === 'ruins' || th.name === 'lava') { // volcano
     g.beginPath(); g.moveTo(1150, 400); g.lineTo(1330, 150); g.lineTo(1390, 150); g.lineTo(1580, 400); g.closePath();
     g.fillStyle = '#6e3b31'; g.fill(); ink(g, 3);
     g.fillStyle = '#ff7a1a'; g.beginPath(); g.moveTo(1335, 152); g.lineTo(1385, 152); g.lineTo(1400, 200); g.lineTo(1360, 180); g.lineTo(1320, 210); g.closePath(); g.fill(); ink(g, 2);
@@ -599,8 +608,58 @@ const LEVELS = {
     dinos: [[1100, 840, 1390, 65], [1600, 1410, 1790, 55], [2200, 1960, 2490, 75], [2800, 2660, 2990, 65], [3500, 3310, 3690, 75], [4100, 3860, 4390, 80], [4700, 4530, 5000, 80], [4300, 3870, 4390, 60]],
     noodles: [[515, 385], [3455, 230], [5000, 380]],
     checks: [1960, 3310, 4600],
-    boss: { x0: 5100, x1: 6060 },
-    castle: 6620
+    boss: { x0: 5100, x1: 6060, hp: 30 },
+    exit: 6600
+  }),
+  4: () => ({
+    name: 'Misty Swamp', theme: 3, width: 6600, start: 420,
+    ground: [[-200, 900], [1040, 1600], [1600, 1900, 400], [2150, 2800], [3050, 3600], [3600, 3950, 395], [3950, 4400], [4750, 5300], [5450, 6800]],
+    blocks: [[650, 70, 50, 'rock'], [2600, 60, 60, 'stump'], [3450, 60, 60, 'stump'], [5000, 70, 56, 'rock'], [6200, 60, 60, 'stump']],
+    plats: [{ x: 1980, y: 410, w: 100, k: 'log' }, { x: 2860, y: 420, w: 110, k: 'log', mx: 60, spd: 1.1 }, { x: 4460, y: 410, w: 100, k: 'log' }, { x: 4610, y: 370, w: 100, k: 'log', my: 40, spd: 1.3 },
+      { x: 1100, y: 330, w: 150, k: 'stone' }, { x: 1280, y: 215, w: 120, k: 'stone' }, { x: 2300, y: 330, w: 160, k: 'log' }, { x: 2480, y: 220, w: 120, k: 'log' }, { x: 3150, y: 320, w: 150, k: 'stone' }, { x: 3330, y: 210, w: 120, k: 'stone' },
+      { x: 4050, y: 330, w: 160, k: 'log' }, { x: 5550, y: 330, w: 150, k: 'stone' }, { x: 5740, y: 220, w: 120, k: 'stone' }, { x: 5920, y: 120, w: 100, k: 'log' }],
+    coins: [...row(300, 420, 6), ...arc(860, 1080, 400, 100, 6), ...row(1120, 290, 4), ...row(1640, 355, 7), ...arc(1880, 2170, 360, 80, 7), ...row(2320, 290, 4), ...row(2500, 180, 3),
+      ...arc(2790, 3070, 380, 90, 7), ...row(3170, 280, 4), ...row(3640, 350, 8), ...row(4070, 290, 4), ...arc(4380, 4780, 330, 80, 9), ...row(4800, 420, 5), ...row(5570, 290, 4), ...row(5760, 180, 3), ...row(6400, 420, 5)],
+    eggs: [[-130, 448, 'green', 1], [1340, 187, 'blue'], [1750, 378, 'red', 1], [2540, 192, 'green'], [3390, 182, 'red'], [3780, 373, 'blue', 1], [4110, 302, 'green'], [4660, 290, 'red'], [5970, 92, 'gold'], [6300, 448, 'blue', 1]],
+    covers: [[-180, 110, 'bush'], [1710, 90, 'rock'], [3730, 110, 'fern'], [6250, 110, 'bush']],
+    dinos: [[1250, 1060, 1590, 70], [1750, 1610, 1890, 55], [2400, 2170, 2790, 75], [2650, 2170, 2790, 60], [3300, 3070, 3590, 75], [3750, 3610, 3940, 60], [4150, 3960, 4390, 80], [5000, 4760, 5290, 80], [5700, 5460, 6100, 80], [6000, 5460, 6400, 70]],
+    noodles: [[685, 385], [3480, 375]],
+    checks: [2200, 3970, 5480],
+    exit: 6400
+  }),
+  5: () => ({
+    name: 'Lava Caves', theme: 4, width: 6800, start: 420,
+    ground: [[-200, 800], [930, 1450], [1600, 2100], [2100, 2400, 400], [2400, 2900], [3150, 3700], [3850, 4400], [4400, 4700, 395], [4700, 5200], [5500, 7000]],
+    blocks: [[600, 70, 50, 'rock'], [1250, 60, 60, 'stump'], [2650, 70, 56, 'rock'], [3500, 60, 60, 'stump'], [4900, 70, 56, 'rock'], [6300, 60, 60, 'stump']],
+    plats: [{ x: 2950, y: 420, w: 110, k: 'log', mx: 50, spd: 1.2 }, { x: 5260, y: 400, w: 90, k: 'stone' }, { x: 5390, y: 370, w: 90, k: 'log', my: 50, spd: 1.3 },
+      { x: 1000, y: 330, w: 150, k: 'stone' }, { x: 1180, y: 215, w: 110, k: 'stone' }, { x: 1700, y: 330, w: 150, k: 'stone' }, { x: 1880, y: 220, w: 110, k: 'stone' }, { x: 2060, y: 120, w: 100, k: 'log' },
+      { x: 3250, y: 320, w: 150, k: 'log' }, { x: 3420, y: 210, w: 120, k: 'stone' }, { x: 3950, y: 330, w: 150, k: 'stone' }, { x: 4130, y: 215, w: 120, k: 'stone' }, { x: 5600, y: 330, w: 150, k: 'stone' }, { x: 5780, y: 215, w: 120, k: 'stone' }],
+    coins: [...row(280, 420, 6), ...arc(760, 960, 400, 100, 6), ...row(1020, 290, 4), ...arc(1420, 1630, 400, 100, 6), ...row(1720, 290, 4), ...row(1890, 180, 3), ...row(2140, 355, 7),
+      ...arc(2880, 3170, 380, 90, 7), ...row(3270, 280, 4), ...arc(3680, 3870, 400, 100, 6), ...row(3970, 290, 4), ...row(4440, 350, 7), ...arc(5180, 5520, 320, 80, 9), ...row(5620, 290, 4), ...row(6500, 420, 5)],
+    eggs: [[-130, 448, 'red', 1], [1235, 187, 'green'], [2110, 92, 'gold'], [2250, 378, 'blue', 1], [3475, 182, 'red'], [4185, 187, 'blue'], [4550, 373, 'green', 1], [5430, 300, 'red'], [5835, 187, 'green'], [6550, 448, 'blue', 1]],
+    covers: [[-180, 110, 'bush'], [2210, 90, 'rock'], [4500, 110, 'fern'], [6500, 110, 'bush']],
+    dinos: [[1100, 940, 1440, 75], [1800, 1610, 2090, 80], [2250, 2110, 2390, 60], [2780, 2410, 2890, 80], [3400, 3160, 3690, 85], [4100, 3860, 4390, 85], [4550, 4410, 4690, 60], [5050, 4710, 5190, 85], [5700, 5510, 5990, 85], [6400, 6010, 6800, 80], [6600, 6010, 6900, 70]],
+    noodles: [[635, 385], [3530, 375]],
+    checks: [1620, 3160, 4720, 5520],
+    exit: 6650
+  }),
+  6: () => ({
+    name: 'Treetop Kingdom', theme: 5, width: 7400, start: 420,
+    ground: [[-200, 750], [880, 1400], [1550, 2000], [2000, 2350, 395], [2350, 2800], [3100, 3600], [3750, 4300], [4300, 4600, 400], [4600, 5100], [5250, 5930], [5990, 7600]],
+    blocks: [[520, 70, 50, 'rock'], [1200, 60, 60, 'stump'], [2600, 70, 50, 'rock'], [4000, 70, 50, 'rock'], [4900, 60, 60, 'stump']],
+    plats: [{ x: 2850, y: 410, w: 90, k: 'log' }, { x: 2990, y: 370, w: 90, k: 'log', mx: 30, spd: 1.2 },
+      { x: 950, y: 330, w: 150, k: 'log' }, { x: 1130, y: 220, w: 110, k: 'log' }, { x: 1650, y: 330, w: 150, k: 'log' }, { x: 1830, y: 215, w: 120, k: 'log' }, { x: 2010, y: 110, w: 100, k: 'log' },
+      { x: 2450, y: 320, w: 150, k: 'log' }, { x: 3200, y: 320, w: 150, k: 'log' }, { x: 3380, y: 210, w: 120, k: 'log' }, { x: 3560, y: 110, w: 100, k: 'log' }, { x: 3850, y: 330, w: 150, k: 'log' },
+      { x: 4700, y: 330, w: 150, k: 'log' }, { x: 4880, y: 215, w: 120, k: 'log' }, { x: 5630, y: 340, w: 130, k: 'stone' }, { x: 6200, y: 340, w: 130, k: 'stone' }],
+    coins: [...row(250, 420, 6), ...arc(720, 900, 400, 100, 5), ...row(970, 290, 4), ...arc(1380, 1570, 400, 100, 6), ...row(1670, 290, 4), ...row(1850, 175, 3), ...row(2040, 350, 7),
+      ...row(2470, 280, 4), ...arc(2790, 3110, 330, 80, 8), ...row(3220, 280, 4), ...row(3400, 170, 3), ...arc(3580, 3770, 400, 100, 6), ...row(4340, 355, 7), ...row(4720, 290, 4), ...arc(5080, 5270, 400, 100, 6)],
+    eggs: [[-130, 448, 'blue', 1], [1185, 192, 'green'], [2060, 82, 'gold'], [2180, 373, 'red', 1], [2525, 292, 'blue'], [3610, 82, 'red'], [3260, 292, 'green'], [4450, 378, 'green', 1], [4935, 187, 'blue'], [5400, 448, 'red', 1]],
+    covers: [[-180, 110, 'bush'], [2140, 90, 'rock'], [4400, 110, 'fern'], [5350, 110, 'bush']],
+    dinos: [[1100, 890, 1390, 80], [1800, 1560, 1990, 85], [2150, 2010, 2340, 65], [2500, 2360, 2790, 85], [3300, 3110, 3590, 90], [4100, 3760, 4290, 90], [4450, 4310, 4590, 65], [4800, 4610, 5090, 90], [5000, 4610, 5090, 75]],
+    noodles: [[555, 385], [2635, 385], [4035, 380]],
+    checks: [1570, 3120, 4620, 5270],
+    boss: { x0: 5500, x1: 6460, hp: 40, angry: true },
+    castle: 7050
   })
 };
 function buildLevel(n) {
@@ -694,7 +753,7 @@ function startLevel(n) {
   });
   if (L.boss) {
     G.walls.push({ x: L.boss.x1, y: -1000, w: 60, h: 2000, id: 'right' });
-    G.boss = { x: L.boss.x1 - 230, feet: GY, face: -1, hp: 30, max: 30, st: 'sleep', t: 0, vx: 0, vy: 0, fr: 'd_look', sc: .74, vuln: false, flash: 0, rot: 0, sink: 0, atk: 0, wallOpen: 0, rightOpen: 0 };
+    G.boss = { x: L.boss.x1 - 230, feet: GY, face: -1, hp: L.boss.hp || 30, max: L.boss.hp || 30, angry: !!L.boss.angry, st: 'sleep', t: 0, vx: 0, vy: 0, fr: 'd_look', sc: .74, vuln: false, flash: 0, rot: 0, sink: 0, atk: 0, wallOpen: 0, rightOpen: 0 };
   }
   G.walls.push({ x: -260, y: -1000, w: 60, h: 2000, id: 'leftEdge' });
   G.walls.push({ x: L.width + 40, y: -1000, w: 60, h: 2000, id: 'rightEdge' });
@@ -726,7 +785,7 @@ function loseLife(p, pit) {
   if (p.st !== 'play') return;
   p.st = 'dead'; p.deadT = 0; p.vy = pit ? 0 : -650; p.vx = 0; p.powered = RUN.goldFire;
   p.lives--; RUN.lives[p.key] = p.lives; sfx(pit ? 'splash' : 'lose');
-  if (pit) { part(p.x + 18, H - 30, 'drop', 14, { a: -Math.PI / 2, spread: 1.2, sp: 380, col: G.L.theme === 1 ? '#bfe9ff' : '#a98a6a', g: 900, r: 6 }); }
+  if (pit) { part(p.x + 18, H - 30, 'drop', 14, { a: -Math.PI / 2, spread: 1.2, sp: 380, col: BG.th.pit === 'water' ? '#bfe9ff' : BG.th.pit === 'lava' ? '#ff9a3a' : '#a98a6a', g: 900, r: 6 }); }
 }
 function respawn(p) {
   const L = G.L; const others = G.players.filter(o => o !== p && o.st === 'play' && !o.done && o.onGround);
@@ -923,12 +982,12 @@ function updBoss(dt) {
   }
   const tgt = nearestPlayer(B.x);
   const faceT = () => { if (tgt) B.face = tgt.x + 18 > B.x ? 1 : -1; };
-  const rage = 1 - B.hp / B.max; // 0..1
+  const rage = Math.min(1, 1 - B.hp / B.max + (B.angry ? .3 : 0)); // 0..1
   const edgeL = A.x0 + 20, edgeR = A.x1 - 20;
   switch (B.st) {
     case 'intro':
       B.fr = 'd_up'; faceT();
-      if (B.t > .35 && !B.roared) { B.roared = 1; sfx('roar'); shake(.9); banner('GIANT CARNOTAURUS!', isTouch() ? 'Jump on its head when it is dizzy, or use 🔥 fire!' : 'Jump on its head when it is dizzy, or breathe fire!', 2.6); }
+      if (B.t > .35 && !B.roared) { B.roared = 1; sfx('roar'); shake(.9); banner(B.angry ? 'THE GIANT CARNOTAURUS IS BACK!' : 'GIANT CARNOTAURUS!', isTouch() ? 'Jump on its head when it is dizzy, or use 🔥 fire!' : 'Jump on its head when it is dizzy, or breathe fire!', 2.6); }
       if (B.t > 2.6) bossSet('idle');
       break;
     case 'idle': {
@@ -999,9 +1058,9 @@ function updBoss(dt) {
       B.fr = 'd_look'; if (B.fallDir == null) B.fallDir = B.x > (A.x0 + A.x1) / 2 ? -1 : 1; B.rot = Math.min(1, B.t / 1.1) * B.fallDir * Math.PI / 2 * .92; B.sink = 0;
       if (B.t > 1.1 && !B.thud) { B.thud = 1; sfx('boom'); shake(1.3); part(B.x, GY, 'dust', 20, { a: -Math.PI / 2, spread: 3, sp: 260, r: 14, g: -20 }); }
       if (B.t > 2) {
-        bossSet('dizzy'); B.done = true; G.bossDone = true; RUN.score += 5000; award('boss');
+        bossSet('dizzy'); B.done = true; G.bossDone = true; RUN.score += 5000; award('boss'); if (G.n === 6) award('boss2');
         sfx('victory'); stopMusic(); setTimeout(() => { if (G && G.bossDone) playMusic('win'); }, 1600); setTimeout(() => { if (G && G.bossDone && curSong === 'win') playMusic('jungle'); }, 9000);
-        banner('YOU BEAT THE GIANT CARNOTAURUS!', 'The path to the Tree House Castle is open ➜', 3.6);
+        banner('YOU BEAT THE GIANT CARNOTAURUS!', G.L.castle ? 'The path to the Tree House Castle is open ➜' : 'The jungle path is open ➜', 3.6);
         G.walls = G.walls.filter(w => w.id !== 'left' && w.id !== 'right');
       }
       break;
@@ -1048,7 +1107,7 @@ function updBossStuff(dt) {
     G.bossT += dt;
     const has = G.L.noodles.some(n => !n.got && n.x > A.x0);
     if (!has && G.bossT > 8 && activePlayers().some(p => !p.powered)) {
-      G.bossT = 0; const spot = Math.random() < .5 ? 5295 : 5865;
+      G.bossT = 0; const spot = A.x0 + (Math.random() < .5 ? 195 : 765);
       G.L.noodles.push({ x: spot, y: 300, got: false, ox: spot, oy: 300 }); part(spot, 300, 'spark', 10, { sp: 160, r: 6, g: 0 });
     }
   }
@@ -1069,7 +1128,7 @@ function update(dt) {
   for (const c of L.covers) { const near = activePlayers().some(p => p.x + 36 > c.x - 50 && p.x < c.x + c.w + 50); c.a = lerp(c.a, near ? .32 : 1, dt * 6); }
   // exit
   if (G.state === 'play') {
-    const exitX = L.castle != null ? (G.bossDone ? L.castle - 20 : 1e9) : L.exit;
+    const exitX = L.boss && !G.bossDone ? 1e9 : L.castle != null ? L.castle - 20 : L.exit;
     for (const p of G.players) if (p.st === 'play' && !p.done && p.x + 18 > exitX) {
       p.done = true; p.vx = 0; pop(p.x + 18, p.y - 30, p.c.name + ' made it!', '#7dff6a'); sfx('check');
     }
@@ -1102,8 +1161,8 @@ function update(dt) {
 function finishLevel() {
   sfx('win'); stopMusic();
   if (G.mode === 'coop') award('buddies');
-  save.unlocked = Math.max(save.unlocked, Math.min(3, G.n + 1)); writeSave();
-  if (G.n === 3) { award('castle'); banner('TREE HOUSE CASTLE!', 'You saved the jungle!', 3); setTimeout(showVictory, 2600); }
+  save.unlocked = Math.max(save.unlocked, Math.min(6, G.n + 1)); writeSave();
+  if (G.n === 6) { award('castle'); banner('TREE HOUSE CASTLE!', 'You saved the jungle!', 3); setTimeout(showVictory, 2600); }
   else { banner('LEVEL COMPLETE!', G.L.name + ' cleared', 2.5); setTimeout(showLevelDone, 2300); }
 }
 
@@ -1139,14 +1198,16 @@ function drawGround(L, cx) {
   for (let i = 0; i < sorted.length - 1; i++) {
     const a = sorted[i], b = sorted[i + 1]; if (b.x0 <= a.x1) continue;
     if (b.x0 < cx - 50 || a.x1 > cx + W + 50) continue;
-    if (L.theme === 1) {
-      ctx.fillStyle = '#2f86c4'; ctx.fillRect(a.x1, 492, b.x0 - a.x1, 60);
+    const pit = BG.th.pit;
+    if (pit === 'water') {
+      ctx.fillStyle = BG.th.water; ctx.fillRect(a.x1, 492, b.x0 - a.x1, 60);
       ctx.beginPath(); for (let x = a.x1; x <= b.x0; x += 10) ctx.lineTo(x, 494 + Math.sin(x * .08 + G.t * 4) * 4);
       ctx.lineWidth = 3; ctx.strokeStyle = '#bfe9ff'; ctx.stroke();
     } else {
-      ctx.fillStyle = L.theme === 2 ? '#3a120a' : '#20301c'; ctx.fillRect(a.x1, 505, b.x0 - a.x1, 40);
-      ctx.beginPath(); for (let x = a.x1; x < b.x0; x += 16) { ctx.lineTo(x, 540); ctx.lineTo(x + 8, 506 + (L.theme === 2 ? Math.sin(x + G.t * 6) * 4 : 0)); } ctx.lineTo(b.x0, 540); ctx.closePath();
-      ctx.fillStyle = L.theme === 2 ? '#ff7a1a' : '#4b5e3a'; ctx.fill(); ink(ctx, 2);
+      const lava = pit === 'lava';
+      ctx.fillStyle = lava ? '#3a120a' : '#20301c'; ctx.fillRect(a.x1, 505, b.x0 - a.x1, 40);
+      ctx.beginPath(); for (let x = a.x1; x < b.x0; x += 16) { ctx.lineTo(x, 540); ctx.lineTo(x + 8, 506 + (lava ? Math.sin(x + G.t * 6) * 4 : 0)); } ctx.lineTo(b.x0, 540); ctx.closePath();
+      ctx.fillStyle = lava ? '#ff7a1a' : '#4b5e3a'; ctx.fill(); ink(ctx, 2);
     }
   }
   for (const g of segs) {
@@ -1388,11 +1449,11 @@ function pickChar(level) {
   </div><button class="b back" data-go="menu">⬅ BACK</button>`);
 }
 function levelSelect() {
-  const names = ['Jungle Trail', 'Vine River', 'Ancient Ruins'];
-  const sub = ['Easy jungle path', 'Rivers & moving logs', 'Giant Carnotaurus boss!'];
+  const names = ['Jungle Trail', 'Vine River', 'Ancient Ruins', 'Misty Swamp', 'Lava Caves', 'Treetop Kingdom'];
+  const sub = ['Easy jungle path', 'Rivers & moving logs', 'Giant Carnotaurus boss!', 'Murky water & more dinos', 'Hot lava pits!', 'Final boss & castle'];
   showMenuHTML(`<div class="h">LEVEL SELECT</div><div class="cards lv">${names.map((n, i) => {
     const lock = i + 1 > save.unlocked; const tot = LEVELS[i + 1]().eggs.length; const got = (save.eggs[i + 1] || []).length;
-    return `<button class="card lvl ${lock ? 'locked' : ''}" ${lock ? '' : `data-go="lvl" data-l="${i + 1}"`} style="--c:${['#5fb33f', '#2f86c4', '#e8742a'][i]}">
+    return `<button class="card lvl ${lock ? 'locked' : ''}" ${lock ? '' : `data-go="lvl" data-l="${i + 1}"`} style="--c:${['#5fb33f', '#2f86c4', '#e8742a', '#3f7a5e', '#c8401a', '#e86aa0'][i]}">
       <b>${lock ? '🔒' : i + 1}</b><span>${n}</span><small>${lock ? 'Finish level ' + i + ' first' : sub[i]}</small><small>🥚 ${got}/${tot}</small></button>`;
   }).join('')}</div><button class="b back" data-go="menu">⬅ BACK</button>`);
 }
@@ -1406,7 +1467,7 @@ function levelMode(l) {
   </div><button class="b back" data-go="levels">⬅ BACK</button>`);
 }
 function collections() {
-  const all = [1, 2, 3].map(n => { const L = LEVELS[n](); return { n, name: L.name, eggs: L.eggs }; });
+  const all = [1, 2, 3, 4, 5, 6].map(n => { const L = LEVELS[n](); return { n, name: L.name, eggs: L.eggs }; });
   const tot = all.reduce((a, l) => a + l.eggs.length, 0), got = all.reduce((a, l) => a + (save.eggs[l.n] || []).length, 0);
   showMenuHTML(`<div class="h">COLLECTIONS</div>
   <div class="coll">
